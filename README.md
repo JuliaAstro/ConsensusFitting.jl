@@ -1,4 +1,4 @@
-# ConsensusFitting
+# ConsensusFitting.jl
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliaastro.org/ConsensusFitting.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliaastro.org/ConsensusFitting.jl/dev/)
@@ -6,4 +6,4 @@
 [![Coverage](https://codecov.io/gh/JuliaAstro/ConsensusFitting.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaAstro/ConsensusFitting.jl)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This package implements robust consensus-based fitting algorithms for finding best-fit models in the presence outliers (e.g., RANSAC).
+This package implements robust consensus-based fitting algorithms for finding best-fit models in the presence outliers (e.g., [RANSAC](https://en.wikipedia.org/wiki/Random_sample_consensus)).
