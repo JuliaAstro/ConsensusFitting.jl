@@ -148,7 +148,7 @@ fig
 Once the inlier set has been identified, a final fit can be performed to the set of all inliers if desired.
 
 ```@example ransac_line
-using LinearAlgebra: dot, diag
+using LinearAlgebra: dot
 
 """
     fit_line_overconstrained(data)
