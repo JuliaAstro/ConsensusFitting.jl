@@ -1,3 +1,6 @@
 [deps]
 ConsensusFitting = "463569c3-d6e9-43b4-bb3a-bd02a13deb89"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+
+[compat]
+Documenter = "1"
