@@ -1,0 +1,13 @@
+name = "ConsensusFitting"
+uuid = "463569c3-d6e9-43b4-bb3a-bd02a13deb89"
+authors = ["cgarling <chris.t.garling@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
