@@ -1,5 +1,9 @@
 module ConsensusFitting
 
-# Write your package code here.
+using Random: AbstractRNG, default_rng, randperm
+
+export ransac
+
+include("RANSAC.jl")
 
 end

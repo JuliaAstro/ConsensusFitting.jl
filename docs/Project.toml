@@ -1,6 +1,12 @@
 [deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 ConsensusFitting = "463569c3-d6e9-43b4-bb3a-bd02a13deb89"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+DocumenterCitations = "daee34ce-89f3-4625-b898-19384cb65244"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [compat]
+CairoMakie = "0.15"
 Documenter = "1"
+DocumenterCitations = "1"
+LinearAlgebra = "1"

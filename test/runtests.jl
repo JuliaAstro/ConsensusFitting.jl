@@ -1,6 +1,9 @@
 using ConsensusFitting
+using Random
 using Test
 
 @testset "ConsensusFitting.jl" begin
-    # Write your tests here.
+
+    include("RANSAC_tests.jl")
+
 end
