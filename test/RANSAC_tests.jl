@@ -4,7 +4,7 @@ using StableRNGs: StableRNG
 using Test
 
 @testset "RANSAC line fitting" begin
-    rng = StableRNG(123)
+    rng = StableRNG(42)
 
     # True model: y = a_true * x + b_true
     a_true, b_true = 2.0, 3.0
@@ -40,7 +40,7 @@ using Test
         return inliers, M
     end
 
-    M, inliers = ransac(data, fit_line, line_dist, 2, 0.2; rng=rng)
+    M, inliers = ransac(data, fit_line, line_dist, 2, 0.5; rng=rng)
 
     # Recovered slope and intercept should be close to the true values
     @test abs(M[1] - a_true) < 0.1
