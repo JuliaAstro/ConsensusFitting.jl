@@ -53,6 +53,8 @@ Robustly fit a model to data using the RANSAC (Random Sample Consensus) algorith
   - `verbose`: When `true`, prints the current trial number and the adaptive
     estimate of the total number of trials required at each iteration.  Defaults
     to `false`.
+  - `verbose_io`: `IO` stream to which verbose output is written.  Defaults to
+    `stdout`.  Primarily useful for testing or redirecting output.
   - `max_data_trials`: Maximum number of attempts to draw a non-degenerate
     minimal sample before emitting a warning and advancing to the next outer
     iteration.  Defaults to `100`.
@@ -95,6 +97,7 @@ function ransac(x, fittingfn, distfn, s, t;
                 rng::AbstractRNG = default_rng(),
                 degenfn = _ -> false,
                 verbose::Bool = false,
+                verbose_io::IO = stdout,
                 max_data_trials::Integer = 100,
                 max_trials::Integer = 1000,
                 p::Real = 0.99)
@@ -149,7 +152,7 @@ function ransac(x, fittingfn, distfn, s, t;
         end
 
         trial_count += 1
-        verbose && println("trial $trial_count out of estimated $(ceil(Int, N)) required")
+        verbose && println(verbose_io, "trial $trial_count out of estimated $(ceil(Int, N)) required")
     end
 
     isnothing(best_M) && error("ransac: could not find a valid model")

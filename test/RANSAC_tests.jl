@@ -1,9 +1,10 @@
 using ConsensusFitting
 using Random
+using StableRNGs: StableRNG
 using Test
 
 @testset "RANSAC line fitting" begin
-    Random.seed!(42)
+    rng = StableRNG(123)
 
     # True model: y = a_true * x + b_true
     a_true, b_true = 2.0, 3.0
@@ -12,11 +13,11 @@ using Test
 
     # Inlier points: near the true line with small Gaussian noise
     x_in = collect(range(-10.0, 10.0; length=n_inliers))
-    y_in = a_true .* x_in .+ b_true .+ 0.2 .* randn(n_inliers)
+    y_in = a_true .* x_in .+ b_true .+ 0.2 .* randn(rng, n_inliers)
 
     # Outlier points: uniformly scattered over a wider region
-    x_out = -10.0 .+ 20.0 .* rand(n_outliers)
-    y_out = -25.0 .+ 50.0 .* rand(n_outliers)
+    x_out = -10.0 .+ 20.0 .* rand(rng, n_outliers)
+    y_out = -25.0 .+ 50.0 .* rand(rng, n_outliers)
 
     # Pack into a 2 × N matrix (each column is one [x; y] point)
     data = [vcat(x_in, x_out)'; vcat(y_in, y_out)']
@@ -39,7 +40,7 @@ using Test
         return inliers, M
     end
 
-    M, inliers = ransac(data, fit_line, line_dist, 2, 0.5)
+    M, inliers = ransac(data, fit_line, line_dist, 2, 0.5; rng=rng)
 
     # Recovered slope and intercept should be close to the true values
     @test abs(M[1] - a_true) < 0.1
@@ -52,6 +53,30 @@ using Test
     @test all(1 .≤ inliers .≤ size(data, 2))
 
     # Error on too few points
-    baddata = rand(2, 1)  # only 1 point, need s=2
-    @test_throws ErrorException ransac(baddata, identity, (M, x, t) -> ([], M), 2, 0.5)
+    bad_data = rand(2, 1)  # only 1 point, need s=2
+    @test_throws ErrorException ransac(bad_data, identity, (M, x, t) -> ([], M), 2, 0.5)
+
+    # Error on degenerate input: all N points are the same
+    degenerate_data = repeat([1.0; 2.0], 1, 10)
+
+    # Warning is emitted every time max_data_trials are exhausted without a
+    # valid model.  The exception is caught here so we can test the two failure
+    # modes independently.
+    @test_logs (:warn, r"could not draw a non-degenerate sample after") try
+        ransac(degenerate_data, fit_line, line_dist, 2, 0.5;
+               max_trials=1, max_data_trials=1, rng=rng)
+    catch
+    end
+
+    # ErrorException is thrown after all outer iterations fail.
+    @test_throws ErrorException ransac(degenerate_data, fit_line, line_dist, 2, 0.5;
+                                       max_trials=5, max_data_trials=3,
+                                       rng=rng)
+
+    # ── verbose=true prints trial-progress lines ─────────────────────────────
+    buf = IOBuffer()
+    ransac(data, fit_line, line_dist, 2, 0.5;
+           verbose=true, verbose_io=buf, rng=rng)
+    output = String(take!(buf))
+    @test occursin(r"trial \d+ out of estimated \d+ required", output)
 end
