@@ -37,7 +37,7 @@ Robustly fit a model to data using the RANSAC (Random Sample Consensus) algorith
     the inlier set.  Must have the signature `(inliers, M) = distfn(M, x, t)`,
     where `inliers` is a vector of last-dimension indices into `x` for which the
     residual is below threshold `t` (i.e., the inlier data points are
-    x[:, :, ..., inliers]). When `M` holds multiple candidate models
+    `x[:, :, ..., inliers]`). When `M` holds multiple candidate models
     this function should select and return the one with the most inliers.
   - `s`: Minimum number of data points required by `fittingfn` to fit a model
     (e.g., 2 for a line, 3 for a plane, 4 for a homography).
