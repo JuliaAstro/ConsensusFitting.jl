@@ -21,8 +21,11 @@ Robustly fit a model to data using the RANSAC (Random Sample Consensus) algorith
 
 # Arguments
 
-  - `x`: Data matrix of size `d × N`, where `d` is the dimensionality of each
-    data point and `N` is the total number of data points.
+  - `x`: Data array of size `[...] × N` (arbitrary dimensionality per 
+    data point is supported, but the last dimension must correspond 
+    to the number of data points). Commonly will be `d x N`, where 
+    `d` is the dimensionality of each data point and `N` is the total 
+    number of data points.
   - `fittingfn`: Function that fits a model to a minimal sample of `s` data
     points. Must have the signature `M = fittingfn(x)`.  The function should
     return an empty collection when it cannot produce a valid model (e.g.,
@@ -32,8 +35,9 @@ Robustly fit a model to data using the RANSAC (Random Sample Consensus) algorith
     selecting the best one.
   - `distfn`: Function that scores a model against all data points and returns
     the inlier set.  Must have the signature `(inliers, M) = distfn(M, x, t)`,
-    where `inliers` is a vector of column indices into `x` for which the
-    residual is below threshold `t`.  When `M` holds multiple candidate models
+    where `inliers` is a vector of last-dimension indices into `x` for which the
+    residual is below threshold `t` (i.e., the inlier data points are
+    x[:, :, ..., inliers]). When `M` holds multiple candidate models
     this function should select and return the one with the most inliers.
   - `s`: Minimum number of data points required by `fittingfn` to fit a model
     (e.g., 2 for a line, 3 for a plane, 4 for a homography).
@@ -102,7 +106,7 @@ function ransac(x, fittingfn, distfn, s, t;
                 max_trials::Integer = 1000,
                 p::Real = 0.99)
 
-    npts = size(x, 2)
+    npts = size(x, ndims(x))
     npts ≥ s || error("ransac: data has $npts points but the minimum sample size is s = $s")
 
     best_M = nothing
@@ -116,7 +120,7 @@ function ransac(x, fittingfn, distfn, s, t;
         M = nothing
         for k in 1:max_data_trials
             ind = randperm(rng, npts)[1:s]
-            xk = view(x, :, ind)
+            xk = selectdim(x, ndims(x), ind)
             if !degenfn(xk)
                 candidate = fittingfn(xk)
                 if !isempty(candidate)

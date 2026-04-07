@@ -52,6 +52,15 @@ using Test
     # All returned indices must be valid column indices of data
     @test all(1 .≤ inliers .≤ size(data, 2))
 
+    # Pack the data into a (1, 2, N) array to test that ransac can handle higher-dimensional input
+    data_3d = reshape(data, 1, 2, :)
+    M_3d, inliers_3d = ransac(data_3d, 
+                              x -> fit_line(reshape(x, 2, 2)), 
+                              (M, x, t) -> line_dist(M, reshape(x, 2, :), t), 2, 0.5; rng=rng)
+    @test abs(M_3d[1] - a_true) < 0.1
+    @test abs(M_3d[2] - b_true) < 0.1
+    @test length(inliers_3d) ≥ round(Int, 0.9 * n_inliers)
+
     # Error on too few points
     bad_data = rand(2, 1)  # only 1 point, need s=2
     @test_throws ErrorException ransac(bad_data, identity, (M, x, t) -> ([], M), 2, 0.5)
